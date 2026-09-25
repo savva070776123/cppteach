@@ -1,0 +1,2570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Master Course</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #7b2fff;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card2: #1a1a2e;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --danger: #ff4466;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
+
+        /* ===== HEADER ===== */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .logo span { color: var(--primary); }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar-header {
+            width: 120px;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-right: 8px;
+        }
+
+        .progress-fill-header {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text-header {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-right: 16px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover { color: white; border-color: var(--primary); }
+
+        /* ===== LAYOUT ===== */
+        .app {
+            display: flex;
+            padding-top: 64px;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 300px;
+            min-width: 300px;
+            height: calc(100vh - 64px);
+            position: sticky;
+            top: 64px;
+            overflow-y: auto;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 16px 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 4px;
+        }
+
+        .module-header {
+            padding: 10px 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .module-header:hover { color: var(--primary); }
+
+        .module-header .module-badge {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 10px;
+        }
+
+        .module-lessons {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .lesson-item {
+            padding: 8px 20px 8px 32px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+            color: var(--text-dim);
+        }
+
+        .lesson-item:hover {
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--text);
+        }
+
+        .lesson-item.active {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .lesson-item.completed {
+            color: var(--success);
+        }
+
+        .lesson-item.completed .lesson-icon { color: var(--success); }
+
+        .lesson-icon {
+            font-size: 12px;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .lesson-title { flex: 1; line-height: 1.3; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 64px);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 30%, rgba(0,212,255,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 70%, rgba(123,47,255,0.08) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate { to { transform: rotate(360deg); } }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 13px;
+            color: var(--primary);
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            position: relative;
+        }
+
+        .btn-large {
+            padding: 14px 32px;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin-top: 48px;
+            position: relative;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* ===== LESSON CONTENT ===== */
+        .lesson-content {
+            display: none;
+            padding: 40px 60px;
+            max-width: 900px;
+        }
+
+        .lesson-content.show {
+            display: block;
+        }
+
+        .lesson-header {
+            margin-bottom: 32px;
+        }
+
+        .lesson-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-module { background: rgba(123,47,255,0.2); color: #a78fff; }
+        .tag-easy { background: rgba(0,255,136,0.15); color: var(--success); }
+        .tag-medium { background: rgba(255,170,0,0.15); color: var(--warning); }
+        .tag-hard { background: rgba(255,68,102,0.15); color: var(--danger); }
+
+        .lesson-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .lesson-header p {
+            color: var(--text-dim);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        /* ===== THEORY BLOCKS ===== */
+        .theory-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .theory-block h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theory-block p {
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .theory-block ul, .theory-block ol {
+            padding-left: 20px;
+            line-height: 2;
+            color: var(--text);
+            font-size: 15px;
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        .code-block {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-title {
+            font-size: 12px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-r { background: #ff5f57; }
+        .dot-y { background: #febc2e; }
+        .dot-g { background: #28c840; }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .copy-btn.copied { border-color: var(--success); color: var(--success); }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        /* Syntax highlighting */
+        .kw { color: #ff79c6; }
+        .kw2 { color: #bd93f9; }
+        .str { color: #f1fa8c; }
+        .num { color: #bd93f9; }
+        .com { color: #6272a4; font-style: italic; }
+        .fn { color: #50fa7b; }
+        .type { color: #8be9fd; }
+        .op { color: #ff79c6; }
+        .var { color: #f8f8f2; }
+        .inc { color: #ff79c6; }
+        .mac { color: #ffb86c; }
+
+        /* ===== INFO BOXES ===== */
+        .info-box {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .info-box.tip {
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.2);
+        }
+
+        .info-box.warning {
+            background: rgba(255,170,0,0.08);
+            border: 1px solid rgba(255,170,0,0.2);
+        }
+
+        .info-box.danger {
+            background: rgba(255,68,102,0.08);
+            border: 1px solid rgba(255,68,102,0.2);
+        }
+
+        .info-box.success {
+            background: rgba(0,255,136,0.08);
+            border: 1px solid rgba(0,255,136,0.2);
+        }
+
+        .info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .info-box p { font-size: 14px; line-height: 1.6; margin: 0; }
+        .info-box strong { display: block; margin-bottom: 4px; font-size: 13px; }
+
+        /* ===== TASKS ===== */
+        .tasks-section {
+            margin-top: 40px;
+        }
+
+        .tasks-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .task-card:hover { border-color: rgba(0,212,255,0.3); }
+
+        .task-card.done {
+            border-color: rgba(0,255,136,0.3);
+            background: rgba(0,255,136,0.03);
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-desc {
+            color: var(--text-dim);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .task-check {
+            width: 24px; height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: transparent;
+            font-size: 13px;
+        }
+
+        .task-check:hover { border-color: var(--primary); }
+        .task-check.checked {
+            background: var(--success);
+            border-color: var(--success);
+            color: #000;
+        }
+
+        /* ===== QUIZ ===== */
+        .quiz-section {
+            margin-top: 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .quiz-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quiz-question {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            color: white;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-option {
+            padding: 12px 16px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-align: left;
+            color: var(--text);
+        }
+
+        .quiz-option:hover { border-color: var(--primary); color: white; }
+        .quiz-option.correct { border-color: var(--success); background: rgba(0,255,136,0.1); color: var(--success); }
+        .quiz-option.wrong { border-color: var(--danger); background: rgba(255,68,102,0.1); color: var(--danger); }
+        .quiz-option:disabled { cursor: default; }
+
+        .quiz-feedback {
+            font-size: 14px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.correct { background: rgba(0,255,136,0.1); color: var(--success); }
+        .quiz-feedback.wrong { background: rgba(255,68,102,0.1); color: var(--danger); }
+
+        /* ===== NAVIGATION ===== */
+        .lesson-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 60px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+        .nav-btn-next {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+
+        .nav-btn-next:hover:not(:disabled) {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .complete-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--success), #00aa55);
+            color: #000;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .complete-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+        .complete-btn.completed {
+            background: rgba(0,255,136,0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        /* ===== HOME PAGE ===== */
+        .home-content {
+            padding: 40px 60px;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .module-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-2px); }
+        .module-card:hover::before { transform: scaleX(1); }
+
+        .module-card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .module-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .module-card p {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .module-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-progress-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .module-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            transition: width 0.5s;
+        }
+
+        .module-progress-text {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        /* ===== FEATURE CARDS ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h4 { font-size: 15px; margin-bottom: 6px; }
+        .feature-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--success); }
+        .toast.info { border-color: var(--primary); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .hero { padding: 40px 20px; }
+            .hero h1 { font-size: 32px; }
+            .lesson-content { padding: 24px 20px; }
+            .home-content { padding: 24px 20px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .lesson-nav { padding: 20px; }
+            .hero-stats { gap: 24px; }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse { animation: pulse 2s infinite; }
+
+        /* Mobile menu */
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; align-items: center; }
+            .sidebar.mobile-open {
+                display: block;
+                position: fixed;
+                top: 64px;
+                left: 0;
+                z-index: 999;
+                width: 280px;
+                height: calc(100vh - 64px);
+            }
+        }
+
+        .table-style {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        .table-style th {
+            background: rgba(0,212,255,0.1);
+            color: var(--primary);
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .table-style td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .table-style tr:last-child td { border-bottom: none; }
+        .table-style code {
+            background: rgba(255,255,255,0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 13px;
+        }
+
+        .inline-code {
+            background: rgba(255,255,255,0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">
+        <div class="logo-icon">⚡</div>
+        C<span>++</span> Master
+    </div>
+    <div class="header-nav">
+        <div class="progress-bar-header">
+            <div class="progress-fill-header" id="headerProgress"></div>
+        </div>
+        <span class="progress-text-header" id="headerProgressText">0% пройдено</span>
+        <button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        <button class="btn btn-ghost" onclick="showHome()">🏠 Главная</button>
+    </div>
+</header>
+
+<!-- APP -->
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Генерируется JS -->
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content" id="mainContent">
+
+        <!-- HOME -->
+        <div id="homePage">
+            <div class="hero">
+                <div class="hero-badge">🚀 Полный курс программирования</div>
+                <h1>Стань мастером<br><span class="gradient-text">C++ разработки</span></h1>
+                <p>От нуля до профессионального разработчика. Теория, примеры кода, задания и квизы в каждом уроке.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-large" onclick="startCourse()">🎯 Начать обучение</button>
+                    <button class="btn btn-ghost btn-large" onclick="showProgress()">📊 Мой прогресс</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">10</div>
+                        <div class="stat-label">Модулей</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">35+</div>
+                        <div class="stat-label">Уроков</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">80+</div>
+                        <div class="stat-label">Заданий</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">0→Pro</div>
+                        <div class="stat-label">Уровень</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-content">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📖</div>
+                        <h4>Структурированная теория</h4>
+                        <p>Каждая концепция объясняется последовательно с примерами реального кода</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💻</div>
+                        <h4>Практические задания</h4>
+                        <p>3 задания разного уровня на каждый урок: от простых до сложных</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h4>Проверка знаний</h4>
+                        <p>Квизы после каждого урока для закрепления материала</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 48px;">
+                    <div class="section-title">📚 Модули курса</div>
+                    <div class="section-subtitle">Нажмите на модуль чтобы начать изучение</div>
+                    <div class="modules-grid" id="modulesGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LESSON PAGES -->
+        <div id="lessonPages"></div>
+
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <span id="toastIcon">✅</span>
+    <span id="toastText">Готово!</span>
+</div>
+
+<script>
+// ============================================================
+// DATA — КУРС
+// ============================================================
+const courseData = [
+    {
+        id: 1,
+        title: "Основы C++",
+        icon: "🌱",
+        description: "Первые шаги: синтаксис, типы данных, ввод-вывод",
+        lessons: [
+            {
+                id: "1-1",
+                title: "Введение и первая программа",
+                difficulty: "easy",
+                description: "Знакомство с C++, установка инструментов, программа Hello World",
+                content: `
+                    <div class="theory-block">
+                        <h3>💡 Что такое C++?</h3>
+                        <p><strong>C++</strong> — один из самых мощных и популярных языков программирования в мире. Создан <strong>Бьярне Страуструпом</strong> в 1983 году как расширение языка C с добавлением ООП.</p>
+                        <br>
+                        <ul>
+                            <li>🎮 Игровые движки — Unreal Engine, CryEngine</li>
+                            <li>💻 Операционные системы — Windows, Linux</li>
+                            <li>🌐 Браузеры — Chrome, Firefox</li>
+                            <li>📊 Базы данных — MySQL, SQLite</li>
+                            <li>🤖 Встраиваемые системы и робототехника</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box tip">
+                        <span class="info-icon">💡</span>
+                        <p><strong>Как компилируется программа:</strong><br>
+                        Исходный код (.cpp) → Препроцессор → Компилятор → Объектный файл (.obj) → Компоновщик → Исполняемый файл (.exe)</p>
+                    </div>
+
+                    <div class="theory-block">
+                        <h3>📝 Ваша первая программа</h3>
+                        <p>Каждая программа на C++ начинается с функции <span class="inline-code">main()</span>. Разберём Hello World построчно:</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>   <span class="com">// подключаем библиотеку ввода-вывода</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;  <span class="com">// используем стандартное пространство имён</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {           <span class="com">// главная функция — точка входа</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Hello, World!"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// вывод текста</span>
+    <span class="kw">return</span> <span class="num">0</span>;           <span class="com">// программа завершилась успешно</span>
+}`,
+                codeTitle: "hello.cpp",
+                afterCode: `
+                    <table class="table-style">
+                        <tr><th>Элемент</th><th>Назначение</th></tr>
+                        <tr><td><code>#include &lt;iostream&gt;</code></td><td>Подключение заголовочного файла</td></tr>
+                        <tr><td><code>using namespace std</code></td><td>Стандартное пространство имён</td></tr>
+                        <tr><td><code>int main()</code></td><td>Главная функция программы</td></tr>
+                        <tr><td><code>cout &lt;&lt;</code></td><td>Оператор вывода на экран</td></tr>
+                        <tr><td><code>endl</code></td><td>Перенос строки</td></tr>
+                        <tr><td><code>return 0</code></td><td>Код успешного завершения</td></tr>
+                    </table>
+                    <div class="info-box warning">
+                        <span class="info-icon">⚠️</span>
+                        <p><strong>Компиляция в терминале:</strong><br>
+                        <code>g++ hello.cpp -o hello</code> — компиляция<br>
+                        <code>./hello</code> — запуск (Linux/Mac)<br>
+                        <code>hello.exe</code> — запуск (Windows)</p>
+                    </div>
+                `,
+                tasks: [
+                    {
+                        id: "t-1-1-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Напишите программу, которая выводит ваше имя, возраст и любимый язык программирования на трёх отдельных строках."
+                    },
+                    {
+                        id: "t-1-1-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Выведите узор из символов звёздочки в виде прямоугольника 5×3, используя только cout."
+                    },
+                    {
+                        id: "t-1-1-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Выведите таблицу умножения числа 7 от 1 до 10 в красивом формате: '7 × 1 = 7', '7 × 2 = 14' и т.д."
+                    }
+                ],
+                quiz: {
+                    question: "Какая функция является точкой входа в программу на C++?",
+                    options: ["start()", "begin()", "main()", "run()"],
+                    correct: 2,
+                    explanation: "Функция main() — обязательная точка входа в любую программу на C++. Выполнение программы начинается с первой строки main()."
+                }
+            },
+            {
+                id: "1-2",
+                title: "Переменные и типы данных",
+                difficulty: "easy",
+                description: "int, double, char, bool, string — основные типы данных C++",
+                content: `
+                    <div class="theory-block">
+                        <h3>📦 Что такое переменная?</h3>
+                        <p>Переменная — это именованная ячейка в памяти компьютера для хранения данных. При создании переменной нужно указать <strong>тип</strong> (какие данные хранить) и <strong>имя</strong>.</p>
+                    </div>
+                    <table class="table-style">
+                        <tr><th>Тип</th><th>Размер</th><th>Пример значений</th><th>Описание</th></tr>
+                        <tr><td><code>int</code></td><td>4 байта</td><td>-2147483648 до 2147483647</td><td>Целые числа</td></tr>
+                        <tr><td><code>double</code></td><td>8 байт</td><td>3.14159, -0.001</td><td>Числа с дробью</td></tr>
+                        <tr><td><code>float</code></td><td>4 байта</td><td>3.14f</td><td>Число с дробью (меньше точность)</td></tr>
+                        <tr><td><code>char</code></td><td>1 байт</td><td>'A', '7', '!'</td><td>Один символ</td></tr>
+                        <tr><td><code>bool</code></td><td>1 байт</td><td>true, false</td><td>Булевый тип</td></tr>
+                        <tr><td><code>string</code></td><td>Динамический</td><td>"Привет"</td><td>Строка текста</td></tr>
+                    </table>
+                    <div class="info-box tip">
+                        <span class="info-icon">💡</span>
+                        <p><strong>Константы:</strong> Используйте <span class="inline-code">const</span> если значение не должно меняться: <span class="inline-code">const double PI = 3.14159;</span></p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;string&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="com">// Целые числа</span>
+    <span class="type">int</span> <span class="var">age</span> <span class="op">=</span> <span class="num">25</span>;
+    <span class="type">long long</span> <span class="var">bigNum</span> <span class="op">=</span> <span class="num">9000000000LL</span>;
+
+    <span class="com">// Числа с дробью</span>
+    <span class="type">double</span> <span class="var">pi</span> <span class="op">=</span> <span class="num">3.14159</span>;
+    <span class="type">float</span> <span class="var">temp</span> <span class="op">=</span> <span class="num">36.6f</span>;
+
+    <span class="com">// Символ и строка</span>
+    <span class="type">char</span> <span class="var">grade</span> <span class="op">=</span> <span class="str">'A'</span>;
+    <span class="type">string</span> <span class="var">name</span> <span class="op">=</span> <span class="str">"Александр"</span>;
+
+    <span class="com">// Булевый тип</span>
+    <span class="type">bool</span> <span class="var">isStudent</span> <span class="op">=</span> <span class="kw">true</span>;
+
+    <span class="com">// Константа</span>
+    <span class="kw">const</span> <span class="type">double</span> <span class="var">GRAVITY</span> <span class="op">=</span> <span class="num">9.81</span>;
+
+    <span class="com">// Вывод переменных</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Имя: "</span> <span class="op">&lt;&lt;</span> <span class="var">name</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Возраст: "</span> <span class="op">&lt;&lt;</span> <span class="var">age</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Оценка: "</span> <span class="op">&lt;&lt;</span> <span class="var">grade</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Студент: "</span> <span class="op">&lt;&lt;</span> <span class="var">isStudent</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// Размер типов</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"sizeof(int) = "</span> <span class="op">&lt;&lt;</span> <span class="kw">sizeof</span>(<span class="type">int</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "variables.cpp",
+                tasks: [
+                    {
+                        id: "t-1-2-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Создайте переменные для описания автомобиля: марка (string), год выпуска (int), мощность двигателя (double), цвет (string), на ходу ли (bool). Выведите все данные."
+                    },
+                    {
+                        id: "t-1-2-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Переменная seconds = 7384. Вычислите и выведите: сколько это часов, минут и секунд. Ожидаемый вывод: '7384 сек = 2 ч. 3 мин. 4 сек.'"
+                    },
+                    {
+                        id: "t-1-2-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Исследуйте переполнение: объявите char x = 127, затем x = x + 1. Объясните результат в комментарии. Сделайте то же для short и unsigned int."
+                    }
+                ],
+                quiz: {
+                    question: "Какой тип данных следует использовать для хранения значения 3.14159?",
+                    options: ["int", "char", "bool", "double"],
+                    correct: 3,
+                    explanation: "double — тип с плавающей точкой двойной точности (8 байт), подходит для хранения чисел с дробной частью. float тоже подошёл бы, но double точнее."
+                }
+            },
+            {
+                id: "1-3",
+                title: "Ввод данных и операторы",
+                difficulty: "easy",
+                description: "cin для ввода, арифметические и логические операторы",
+                content: `
+                    <div class="theory-block">
+                        <h3>⌨️ Ввод данных с клавиатуры</h3>
+                        <p>Для ввода данных используется <span class="inline-code">cin</span> (console input) с оператором <span class="inline-code">>></span>. Для ввода строк с пробелами используйте <span class="inline-code">getline()</span>.</p>
+                    </div>
+                    <div class="theory-block">
+                        <h3>🔢 Операторы C++</h3>
+                        <ul>
+                            <li><strong>Арифметические:</strong> + - * / % ++ --</li>
+                            <li><strong>Присваивания:</strong> = += -= *= /= %=</li>
+                            <li><strong>Сравнения:</strong> == != < > <= >=</li>
+                            <li><strong>Логические:</strong> && (И) || (ИЛИ) ! (НЕ)</li>
+                        </ul>
+                    </div>
+                    <div class="info-box danger">
+                        <span class="info-icon">⚠️</span>
+                        <p><strong>Целочисленное деление!</strong> При делении двух int результат тоже int: 7/2 = 3, а не 3.5! Чтобы получить 3.5, напишите: (double)7/2</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> <span class="var">a</span>, <span class="var">b</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Введите два числа: "</span>;
+    <span class="var">cin</span> <span class="op">&gt;&gt;</span> <span class="var">a</span> <span class="op">&gt;&gt;</span> <span class="var">b</span>;
+
+    <span class="com">// Арифметика</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">+</span> <span class="var">b</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;   <span class="com">// сложение</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">-</span> <span class="var">b</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;   <span class="com">// вычитание</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">*</span> <span class="var">b</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;   <span class="com">// умножение</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">/</span> <span class="var">b</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;   <span class="com">// целочисленное деление</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">%</span> <span class="var">b</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;   <span class="com">// остаток от деления</span>
+
+    <span class="com">// Правильное деление с дробью</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> (<span class="type">double</span>)<span class="var">a</span> <span class="op">/</span> <span class="var">b</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// Операторы сравнения (результат: 0 или 1)</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> (<span class="var">a</span> <span class="op">==</span> <span class="var">b</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// равно?</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> (<span class="var">a</span> <span class="op">&gt;</span> <span class="var">b</span>)  <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// больше?</span>
+
+    <span class="com">// Инкремент/декремент</span>
+    <span class="var">a</span><span class="op">++</span>;  <span class="com">// a = a + 1</span>
+    <span class="var">b</span><span class="op">--</span>;  <span class="com">// b = b - 1</span>
+    <span class="var">a</span> <span class="op">+=</span> <span class="num">10</span>; <span class="com">// a = a + 10</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "operators.cpp",
+                tasks: [
+                    {
+                        id: "t-1-3-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Калькулятор прямоугольника: пользователь вводит длину и ширину, программа выводит периметр и площадь."
+                    },
+                    {
+                        id: "t-1-3-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Конвертер температур: пользователь вводит °C, программа выводит в °F (F = C × 9/5 + 32) и K (K = C + 273.15)."
+                    },
+                    {
+                        id: "t-1-3-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Пользователь вводит трёхзначное число. Выведите: цифру сотен, десятков, единиц, сумму цифр, является ли число палиндромом (121, 333 — да, 123 — нет). Только операторы, без if!"
+                    }
+                ],
+                quiz: {
+                    question: "Чему равно выражение: 17 % 5 в C++?",
+                    options: ["3", "2", "3.4", "0"],
+                    correct: 1,
+                    explanation: "Оператор % возвращает остаток от деления. 17 = 5 × 3 + 2, значит 17 % 5 = 2."
+                }
+            }
+        ]
+    },
+    {
+        id: 2,
+        title: "Управляющие конструкции",
+        icon: "🔀",
+        description: "Условия, циклы — управление потоком выполнения",
+        lessons: [
+            {
+                id: "2-1",
+                title: "Условный оператор if-else",
+                difficulty: "easy",
+                description: "Принятие решений в программе с помощью условных операторов",
+                content: `
+                    <div class="theory-block">
+                        <h3>🔀 Ветвление программы</h3>
+                        <p>Условный оператор <span class="inline-code">if-else</span> позволяет выполнять разный код в зависимости от условия. Условие — это выражение, результатом которого является <strong>true</strong> или <strong>false</strong>.</p>
+                    </div>
+                    <div class="info-box tip">
+                        <span class="info-icon">💡</span>
+                        <p><strong>Тернарный оператор</strong> — краткая запись if-else:<br>
+                        <code>int max = (a > b) ? a : b;</code><br>
+                        Читается: "если a > b, то max = a, иначе max = b"</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> <span class="var">score</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Введите оценку (0-100): "</span>;
+    <span class="var">cin</span> <span class="op">&gt;&gt;</span> <span class="var">score</span>;
+
+    <span class="com">// Цепочка if-else if-else</span>
+    <span class="kw">if</span> (<span class="var">score</span> <span class="op">&gt;=</span> <span class="num">90</span>) {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Отлично! (A)"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    } <span class="kw">else if</span> (<span class="var">score</span> <span class="op">&gt;=</span> <span class="num">75</span>) {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Хорошо! (B)"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    } <span class="kw">else if</span> (<span class="var">score</span> <span class="op">&gt;=</span> <span class="num">60</span>) {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Удовлетворительно (C)"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    } <span class="kw">else</span> {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Неудовлетворительно (F)"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+
+    <span class="com">// Логические операторы в условиях</span>
+    <span class="type">int</span> <span class="var">year</span> <span class="op">=</span> <span class="num">2024</span>;
+    <span class="type">bool</span> <span class="var">isLeap</span> <span class="op">=</span> (<span class="var">year</span> <span class="op">%</span> <span class="num">4</span> <span class="op">==</span> <span class="num">0</span>) <span class="op">&amp;&amp;</span>
+                  (<span class="var">year</span> <span class="op">%</span> <span class="num">100</span> <span class="op">!=</span> <span class="num">0</span> <span class="op">||</span> <span class="var">year</span> <span class="op">%</span> <span class="num">400</span> <span class="op">==</span> <span class="num">0</span>);
+
+    <span class="kw">if</span> (<span class="var">isLeap</span>)
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">year</span> <span class="op">&lt;&lt;</span> <span class="str">" — високосный"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// Тернарный оператор</span>
+    <span class="type">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">10</span>, <span class="var">b</span> <span class="op">=</span> <span class="num">20</span>;
+    <span class="type">int</span> <span class="var">max</span> <span class="op">=</span> (<span class="var">a</span> <span class="op">&gt;</span> <span class="var">b</span>) <span class="op">?</span> <span class="var">a</span> <span class="op">:</span> <span class="var">b</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Максимум: "</span> <span class="op">&lt;&lt;</span> <span class="var">max</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "conditions.cpp",
+                tasks: [
+                    {
+                        id: "t-2-1-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Пользователь вводит возраст. Программа выводит категорию: до 12 — ребёнок, 12-17 — подросток, 18-64 — взрослый, 65+ — пенсионер."
+                    },
+                    {
+                        id: "t-2-1-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Калькулятор: пользователь вводит два числа и символ операции (+,-,*,/). Программа выводит результат. Обработайте деление на ноль!"
+                    },
+                    {
+                        id: "t-2-1-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Система скидок: введите сумму покупки и тип клиента (обычный/премиум). Скидки: до 1000р — 0%, 1000-5000р — 5%, 5000-10000р — 10%, свыше — 15%. Премиум-клиент получает ещё +5%. Выведите итог и размер скидки."
+                    }
+                ],
+                quiz: {
+                    question: "Что выведет программа: cout << (5 > 3 && 2 < 1);",
+                    options: ["true", "1", "0", "false"],
+                    correct: 2,
+                    explanation: "5 > 3 — true (1), но 2 < 1 — false (0). true && false = false (0). cout выводит bool как 0 или 1."
+                }
+            },
+            {
+                id: "2-2",
+                title: "Циклы: for, while, do-while",
+                difficulty: "easy",
+                description: "Повторение действий с помощью циклов",
+                content: `
+                    <div class="theory-block">
+                        <h3>🔄 Зачем нужны циклы?</h3>
+                        <p>Циклы позволяют выполнять один и тот же код многократно. В C++ три вида циклов:
+                        <br>• <span class="inline-code">for</span> — когда известно число итераций
+                        <br>• <span class="inline-code">while</span> — пока условие истинно
+                        <br>• <span class="inline-code">do-while</span> — как while, но выполняется минимум 1 раз</p>
+                    </div>
+                    <div class="info-box tip">
+                        <span class="info-icon">💡</span>
+                        <p><strong>break</strong> — прерывает цикл досрочно<br>
+                        <strong>continue</strong> — пропускает текущую итерацию и переходит к следующей</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="com">// === for: знаем количество итераций ===</span>
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">1</span>; <span class="var">i</span> <span class="op">&lt;=</span> <span class="num">5</span>; <span class="var">i</span><span class="op">++</span>) {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span> <span class="op">&lt;&lt;</span> <span class="str">" "</span>;
+    }
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>; <span class="com">// 1 2 3 4 5</span>
+
+    <span class="com">// === while: пока условие истинно ===</span>
+    <span class="type">int</span> <span class="var">n</span> <span class="op">=</span> <span class="num">10</span>;
+    <span class="kw">while</span> (<span class="var">n</span> <span class="op">&gt;</span> <span class="num">0</span>) {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">n</span> <span class="op">&lt;&lt;</span> <span class="str">" "</span>;
+        <span class="var">n</span> <span class="op">-=</span> <span class="num">2</span>;
+    }
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>; <span class="com">// 10 8 6 4 2</span>
+
+    <span class="com">// === do-while: минимум одно выполнение ===</span>
+    <span class="type">int</span> <span class="var">num</span>;
+    <span class="kw">do</span> {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Введите число 1-10: "</span>;
+        <span class="var">cin</span> <span class="op">&gt;&gt;</span> <span class="var">num</span>;
+    } <span class="kw">while</span> (<span class="var">num</span> <span class="op">&lt;</span> <span class="num">1</span> <span class="op">||</span> <span class="var">num</span> <span class="op">&gt;</span> <span class="num">10</span>);
+
+    <span class="com">// === Вложенные циклы: таблица умножения ===</span>
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">1</span>; <span class="var">i</span> <span class="op">&lt;=</span> <span class="num">3</span>; <span class="var">i</span><span class="op">++</span>) {
+        <span class="kw">for</span> (<span class="type">int</span> <span class="var">j</span> <span class="op">=</span> <span class="num">1</span>; <span class="var">j</span> <span class="op">&lt;=</span> <span class="num">3</span>; <span class="var">j</span><span class="op">++</span>) {
+            <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span> <span class="op">*</span> <span class="var">j</span> <span class="op">&lt;&lt;</span> <span class="str">"\t"</span>;
+        }
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "loops.cpp",
+                tasks: [
+                    {
+                        id: "t-2-2-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Выведите таблицу умножения 10×10 с красивым форматированием (числа выровнены по столбцам)."
+                    },
+                    {
+                        id: "t-2-2-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Игра 'Угадай число': компьютер 'загадал' 42, пользователь вводит числа. После каждой попытки выводить 'Больше' или 'Меньше'. Показать количество попыток."
+                    },
+                    {
+                        id: "t-2-2-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Нарисуйте с помощью циклов: 1) Треугольник из звёздочек, 2) Пирамиду, 3) Ромб. Размер вводит пользователь."
+                    }
+                ],
+                quiz: {
+                    question: "Сколько раз выполнится тело цикла: for(int i=0; i<5; i+=2)?",
+                    options: ["5", "2", "3", "4"],
+                    correct: 2,
+                    explanation: "i принимает значения 0, 2, 4 — это 3 итерации. При i=6 условие i<5 не выполняется."
+                }
+            }
+        ]
+    },
+    {
+        id: 3,
+        title: "Функции",
+        icon: "⚙️",
+        description: "Разбиение кода на функции, рекурсия",
+        lessons: [
+            {
+                id: "3-1",
+                title: "Создание и вызов функций",
+                difficulty: "medium",
+                description: "Объявление, определение и вызов функций в C++",
+                content: `
+                    <div class="theory-block">
+                        <h3>🧩 Зачем нужны функции?</h3>
+                        <p>Функции позволяют:<br>
+                        • <strong>Переиспользовать</strong> код — написал один раз, вызывай много раз<br>
+                        • <strong>Структурировать</strong> программу — разбить большой код на логические блоки<br>
+                        • <strong>Тестировать</strong> — каждую функцию можно проверить отдельно</p>
+                    </div>
+                    <div class="info-box tip">
+                        <span class="info-icon">💡</span>
+                        <p><strong>Перегрузка функций</strong> — можно создать несколько функций с одним именем, но разными параметрами. Компилятор сам выберет нужную по типам аргументов.</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="com">// Функция возвращает значение</span>
+<span class="type">int</span> <span class="fn">add</span>(<span class="type">int</span> <span class="var">a</span>, <span class="type">int</span> <span class="var">b</span>) {
+    <span class="kw">return</span> <span class="var">a</span> <span class="op">+</span> <span class="var">b</span>;
+}
+
+<span class="com">// Функция ничего не возвращает (void)</span>
+<span class="type">void</span> <span class="fn">printLine</span>(<span class="type">int</span> <span class="var">length</span> <span class="op">=</span> <span class="num">20</span>) { <span class="com">// параметр по умолчанию</span>
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="var">i</span> <span class="op">&lt;</span> <span class="var">length</span>; <span class="var">i</span><span class="op">++</span>) <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"-"</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+}
+
+<span class="com">// Передача по ссылке — меняем оригинал</span>
+<span class="type">void</span> <span class="fn">swap</span>(<span class="type">int</span><span class="op">&amp;</span> <span class="var">a</span>, <span class="type">int</span><span class="op">&amp;</span> <span class="var">b</span>) {
+    <span class="type">int</span> <span class="var">temp</span> <span class="op">=</span> <span class="var">a</span>;
+    <span class="var">a</span> <span class="op">=</span> <span class="var">b</span>;
+    <span class="var">b</span> <span class="op">=</span> <span class="var">temp</span>;
+}
+
+<span class="com">// Перегрузка функций</span>
+<span class="type">double</span> <span class="fn">area</span>(<span class="type">double</span> <span class="var">r</span>) { <span class="kw">return</span> <span class="num">3.14</span> <span class="op">*</span> <span class="var">r</span> <span class="op">*</span> <span class="var">r</span>; }  <span class="com">// круг</span>
+<span class="type">double</span> <span class="fn">area</span>(<span class="type">double</span> <span class="var">w</span>, <span class="type">double</span> <span class="var">h</span>) { <span class="kw">return</span> <span class="var">w</span> <span class="op">*</span> <span class="var">h</span>; }  <span class="com">// прямоугольник</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">add</span>(<span class="num">5</span>, <span class="num">3</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// 8</span>
+    <span class="fn">printLine</span>();              <span class="com">// 20 дефисов</span>
+    <span class="fn">printLine</span>(<span class="num">10</span>);            <span class="com">// 10 дефисов</span>
+
+    <span class="type">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">5</span>, <span class="var">y</span> <span class="op">=</span> <span class="num">10</span>;
+    <span class="fn">swap</span>(<span class="var">x</span>, <span class="var">y</span>);
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span> <span class="op">&lt;&lt;</span> <span class="str">" "</span> <span class="op">&lt;&lt;</span> <span class="var">y</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>; <span class="com">// 10 5</span>
+
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">area</span>(<span class="num">5.0</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;       <span class="com">// площадь круга</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">area</span>(<span class="num">4.0</span>, <span class="num">6.0</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// площадь прямоугольника</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "functions.cpp",
+                tasks: [
+                    {
+                        id: "t-3-1-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Напишите функции: isPrime(n) — простое ли число, factorial(n) — факториал, power(base, exp) — степень. Протестируйте каждую."
+                    },
+                    {
+                        id: "t-3-1-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Создайте функцию solveQuadratic(a, b, c, x1, x2, roots) для решения ax²+bx+c=0. Функция через ссылки возвращает корни и их количество."
+                    },
+                    {
+                        id: "t-3-1-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Создайте мини-библиотеку функций для работы с числами: reverseNumber, isPalindrome, digitSum, digitCount, gcd (НОД), lcm (НОК). Напишите меню для их тестирования."
+                    }
+                ],
+                quiz: {
+                    question: "Как называется передача параметра, при которой функция может изменить оригинальную переменную?",
+                    options: ["По значению", "По константе", "По ссылке", "По указателю (только так)"],
+                    correct: 2,
+                    explanation: "При передаче по ссылке (int& x) функция работает с оригинальной переменной, а не её копией. Изменения внутри функции отражаются на оригинале."
+                }
+            },
+            {
+                id: "3-2",
+                title: "Рекурсия",
+                difficulty: "medium",
+                description: "Функции, которые вызывают сами себя",
+                content: `
+                    <div class="theory-block">
+                        <h3>🌀 Что такое рекурсия?</h3>
+                        <p>Рекурсия — это когда функция вызывает <strong>саму себя</strong>. Каждая рекурсивная функция должна иметь:<br>
+                        • <strong>Базовый случай</strong> — условие остановки (иначе бесконечная рекурсия!)<br>
+                        • <strong>Рекурсивный случай</strong> — вызов самой себя с изменёнными параметрами</p>
+                    </div>
+                    <div class="info-box warning">
+                        <span class="info-icon">⚠️</span>
+                        <p><strong>Стек вызовов!</strong> Каждый рекурсивный вызов занимает место в стеке. При слишком большой глубине — Stack Overflow. Для больших данных предпочитайте итеративные решения.</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="com">// Факториал: n! = n * (n-1)!</span>
+<span class="type">long long</span> <span class="fn">factorial</span>(<span class="type">int</span> <span class="var">n</span>) {
+    <span class="kw">if</span> (<span class="var">n</span> <span class="op">&lt;=</span> <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;  <span class="com">// базовый случай!</span>
+    <span class="kw">return</span> <span class="var">n</span> <span class="op">*</span> <span class="fn">factorial</span>(<span class="var">n</span> <span class="op">-</span> <span class="num">1</span>);  <span class="com">// рекурсивный вызов</span>
+}
+
+<span class="com">// Числа Фибоначчи</span>
+<span class="type">int</span> <span class="fn">fib</span>(<span class="type">int</span> <span class="var">n</span>) {
+    <span class="kw">if</span> (<span class="var">n</span> <span class="op">&lt;=</span> <span class="num">1</span>) <span class="kw">return</span> <span class="var">n</span>;
+    <span class="kw">return</span> <span class="fn">fib</span>(<span class="var">n</span> <span class="op">-</span> <span class="num">1</span>) <span class="op">+</span> <span class="fn">fib</span>(<span class="var">n</span> <span class="op">-</span> <span class="num">2</span>);
+}
+
+<span class="com">// Бинарный поиск (рекурсивно)</span>
+<span class="type">int</span> <span class="fn">binSearch</span>(<span class="type">int</span> <span class="var">arr</span>[], <span class="type">int</span> <span class="var">l</span>, <span class="type">int</span> <span class="var">r</span>, <span class="type">int</span> <span class="var">target</span>) {
+    <span class="kw">if</span> (<span class="var">l</span> <span class="op">&gt;</span> <span class="var">r</span>) <span class="kw">return</span> <span class="num">-1</span>;
+    <span class="type">int</span> <span class="var">mid</span> <span class="op">=</span> <span class="var">l</span> <span class="op">+</span> (<span class="var">r</span> <span class="op">-</span> <span class="var">l</span>) <span class="op">/</span> <span class="num">2</span>;
+    <span class="kw">if</span> (<span class="var">arr</span>[<span class="var">mid</span>] <span class="op">==</span> <span class="var">target</span>) <span class="kw">return</span> <span class="var">mid</span>;
+    <span class="kw">if</span> (<span class="var">arr</span>[<span class="var">mid</span>] <span class="op">&lt;</span> <span class="var">target</span>)
+        <span class="kw">return</span> <span class="fn">binSearch</span>(<span class="var">arr</span>, <span class="var">mid</span><span class="op">+</span><span class="num">1</span>, <span class="var">r</span>, <span class="var">target</span>);
+    <span class="kw">return</span> <span class="fn">binSearch</span>(<span class="var">arr</span>, <span class="var">l</span>, <span class="var">mid</span><span class="op">-</span><span class="num">1</span>, <span class="var">target</span>);
+}
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="com">// factorial(5) = 5*4*3*2*1 = 120</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">factorial</span>(<span class="num">5</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;   <span class="com">// 120</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">factorial</span>(<span class="num">10</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// 3628800</span>
+
+    <span class="com">// Первые 10 чисел Фибоначчи</span>
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="var">i</span> <span class="op">&lt;</span> <span class="num">10</span>; <span class="var">i</span><span class="op">++</span>)
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">fib</span>(<span class="var">i</span>) <span class="op">&lt;&lt;</span> <span class="str">" "</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>; <span class="com">// 0 1 1 2 3 5 8 13 21 34</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "recursion.cpp",
+                tasks: [
+                    {
+                        id: "t-3-2-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Напишите рекурсивные функции: сумма от 1 до n, степень числа, сумма цифр числа."
+                    },
+                    {
+                        id: "t-3-2-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Рекурсивная проверка палиндрома строки: isPalindrome(string s, int left, int right). Протестируйте на 'racecar', 'hello', 'level', 'world'."
+                    },
+                    {
+                        id: "t-3-2-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Реализуйте QuickSort рекурсивно. Протестируйте на массиве из 15 случайных чисел. Сравните с пузырьковой сортировкой: подсчитайте количество сравнений."
+                    }
+                ],
+                quiz: {
+                    question: "Что произойдёт если в рекурсивной функции нет базового случая?",
+                    options: ["Функция вернёт 0", "Программа зависнет (Stack Overflow)", "Компилятор выдаст ошибку", "Цикл выполнится 1000 раз и остановится"],
+                    correct: 1,
+                    explanation: "Без базового случая функция будет вызывать себя бесконечно, пока не заполнится стек вызовов. Это называется Stack Overflow — программа аварийно завершится."
+                }
+            }
+        ]
+    },
+    {
+        id: 4,
+        title: "Массивы и строки",
+        icon: "📦",
+        description: "Хранение коллекций данных, работа со строками",
+        lessons: [
+            {
+                id: "4-1",
+                title: "Массивы",
+                difficulty: "medium",
+                description: "Одномерные и двумерные массивы, сортировка и поиск",
+                content: `
+                    <div class="theory-block">
+                        <h3>📦 Что такое массив?</h3>
+                        <p>Массив — это набор элементов <strong>одного типа</strong>, расположенных в памяти последовательно. Доступ к элементам осуществляется по <strong>индексу</strong>, начиная с <strong>нуля</strong>.</p>
+                    </div>
+                    <div class="info-box danger">
+                        <span class="info-icon">🚫</span>
+                        <p><strong>Выход за границы массива</strong> — одна из самых опасных ошибок в C++! Если массив размером 5, то индексы 0..4. Обращение к arr[5] — неопределённое поведение!</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;algorithm&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="com">// Объявление и инициализация</span>
+    <span class="type">int</span> <span class="var">arr</span>[] <span class="op">=</span> {<span class="num">64</span>, <span class="num">25</span>, <span class="num">12</span>, <span class="num">22</span>, <span class="num">11</span>};
+    <span class="type">int</span> <span class="var">n</span> <span class="op">=</span> <span class="kw">sizeof</span>(<span class="var">arr</span>) <span class="op">/</span> <span class="kw">sizeof</span>(<span class="var">arr</span>[<span class="num">0</span>]);  <span class="com">// 5</span>
+
+    <span class="com">// Перебор и сумма</span>
+    <span class="type">int</span> <span class="var">sum</span> <span class="op">=</span> <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="var">i</span> <span class="op">&lt;</span> <span class="var">n</span>; <span class="var">i</span><span class="op">++</span>) <span class="var">sum</span> <span class="op">+=</span> <span class="var">arr</span>[<span class="var">i</span>];
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Сумма: "</span> <span class="op">&lt;&lt;</span> <span class="var">sum</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// Минимум и максимум</span>
+    <span class="type">int</span> <span class="var">minV</span> <span class="op">=</span> <span class="var">arr</span>[<span class="num">0</span>], <span class="var">maxV</span> <span class="op">=</span> <span class="var">arr</span>[<span class="num">0</span>];
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">x</span> : <span class="var">arr</span>) {  <span class="com">// range-based for</span>
+        <span class="kw">if</span> (<span class="var">x</span> <span class="op">&lt;</span> <span class="var">minV</span>) <span class="var">minV</span> <span class="op">=</span> <span class="var">x</span>;
+        <span class="kw">if</span> (<span class="var">x</span> <span class="op">&gt;</span> <span class="var">maxV</span>) <span class="var">maxV</span> <span class="op">=</span> <span class="var">x</span>;
+    }
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Min="</span> <span class="op">&lt;&lt;</span> <span class="var">minV</span> <span class="op">&lt;&lt;</span> <span class="str">" Max="</span> <span class="op">&lt;&lt;</span> <span class="var">maxV</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// Сортировка пузырьком</span>
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="var">i</span> <span class="op">&lt;</span> <span class="var">n</span><span class="op">-</span><span class="num">1</span>; <span class="var">i</span><span class="op">++</span>)
+        <span class="kw">for</span> (<span class="type">int</span> <span class="var">j</span> <span class="op">=</span> <span class="num">0</span>; <span class="var">j</span> <span class="op">&lt;</span> <span class="var">n</span><span class="op">-</span><span class="var">i</span><span class="op">-</span><span class="num">1</span>; <span class="var">j</span><span class="op">++</span>)
+            <span class="kw">if</span> (<span class="var">arr</span>[<span class="var">j</span>] <span class="op">&gt;</span> <span class="var">arr</span>[<span class="var">j</span><span class="op">+</span><span class="num">1</span>])
+                <span class="fn">swap</span>(<span class="var">arr</span>[<span class="var">j</span>], <span class="var">arr</span>[<span class="var">j</span><span class="op">+</span><span class="num">1</span>]);
+
+    <span class="com">// Двумерный массив (матрица)</span>
+    <span class="type">int</span> <span class="var">m</span>[<span class="num">3</span>][<span class="num">3</span>] <span class="op">=</span> {{<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>},{<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>},{<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>}};
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span><span class="op">=</span><span class="num">0</span>; <span class="var">i</span><span class="op">&lt;</span><span class="num">3</span>; <span class="var">i</span><span class="op">++</span>) {
+        <span class="kw">for</span> (<span class="type">int</span> <span class="var">j</span><span class="op">=</span><span class="num">0</span>; <span class="var">j</span><span class="op">&lt;</span><span class="num">3</span>; <span class="var">j</span><span class="op">++</span>)
+            <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">m</span>[<span class="var">i</span>][<span class="var">j</span>] <span class="op">&lt;&lt;</span> <span class="str">"\t"</span>;
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "arrays.cpp",
+                tasks: [
+                    {
+                        id: "t-4-1-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Пользователь вводит 10 чисел. Выведите: сумму, среднее, максимум, минимум, количество чётных и нечётных чисел."
+                    },
+                    {
+                        id: "t-4-1-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Реализуйте insertionSort (сортировка вставками) и binarySearch. Пользователь вводит массив, программа сортирует и ищет введённый элемент."
+                    },
+                    {
+                        id: "t-4-1-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Игра 'Крестики-нолики' на доске 3×3. Два игрока поочерёдно вводят координаты. После каждого хода проверяйте победителя. Реализуйте AI для компьютера (хотя бы случайные ходы)."
+                    }
+                ],
+                quiz: {
+                    question: "Если массив объявлен как int arr[5], каков индекс последнего элемента?",
+                    options: ["5", "4", "6", "-1"],
+                    correct: 1,
+                    explanation: "В C++ индексация начинается с 0. Массив из 5 элементов имеет индексы 0, 1, 2, 3, 4. Последний элемент — arr[4]."
+                }
+            }
+        ]
+    },
+    {
+        id: 5,
+        title: "Указатели и память",
+        icon: "🎯",
+        description: "Работа с адресами памяти, динамическое выделение",
+        lessons: [
+            {
+                id: "5-1",
+                title: "Указатели",
+                difficulty: "hard",
+                description: "Адреса памяти, разыменование, арифметика указателей",
+                content: `
+                    <div class="theory-block">
+                        <h3>🎯 Что такое указатель?</h3>
+                        <p>Указатель — это переменная, которая хранит <strong>адрес</strong> другой переменной в памяти. Каждая переменная имеет свой адрес — номер ячейки памяти, где хранится её значение.</p>
+                        <br>
+                        <ul>
+                            <li><span class="inline-code">&x</span> — взять адрес переменной x</li>
+                            <li><span class="inline-code">int* ptr</span> — объявить указатель на int</li>
+                            <li><span class="inline-code">*ptr</span> — разыменовать (получить значение по адресу)</li>
+                            <li><span class="inline-code">nullptr</span> — нулевой указатель (никуда не указывает)</li>
+                        </ul>
+                    </div>
+                    <div class="info-box danger">
+                        <span class="info-icon">🚫</span>
+                        <p><strong>Висячие указатели!</strong> После delete ptr; немедленно присваивайте ptr = nullptr. Обращение к удалённой памяти — неопределённое поведение!</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">42</span>;
+    <span class="type">int</span><span class="op">*</span> <span class="var">ptr</span> <span class="op">=</span> <span class="op">&amp;</span><span class="var">x</span>;  <span class="com">// ptr хранит адрес x</span>
+
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"x = "</span> <span class="op">&lt;&lt;</span> <span class="var">x</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"&x = "</span> <span class="op">&lt;&lt;</span> <span class="op">&amp;</span><span class="var">x</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// адрес</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"*ptr = "</span> <span class="op">&lt;&lt;</span> <span class="op">*</span><span class="var">ptr</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>; <span class="com">// 42</span>
+
+    <span class="op">*</span><span class="var">ptr</span> <span class="op">=</span> <span class="num">100</span>;  <span class="com">// изменяем x через указатель</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"x = "</span> <span class="op">&lt;&lt;</span> <span class="var">x</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;  <span class="com">// 100</span>
+
+    <span class="com">// Динамическое выделение памяти</span>
+    <span class="type">int</span><span class="op">*</span> <span class="var">dynArr</span> <span class="op">=</span> <span class="kw">new</span> <span class="type">int</span>[<span class="num">5</span>];  <span class="com">// выделить память в куче</span>
+    <span class="kw">for</span> (<span class="type">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="var">i</span> <span class="op">&lt;</span> <span class="num">5</span>; <span class="var">i</span><span class="op">++</span>)
+        <span class="var">dynArr</span>[<span class="var">i</span>] <span class="op">=</span> <span class="var">i</span> <span class="op">*</span> <span class="num">10</span>;
+
+    <span class="kw">delete</span>[] <span class="var">dynArr</span>;  <span class="com">// ОБЯЗАТЕЛЬНО освободить!</span>
+    <span class="var">dynArr</span> <span class="op">=</span> <span class="kw">nullptr</span>;
+
+    <span class="com">// Умный указатель (C++11) — автоматическое освобождение</span>
+    <span class="com">// #include &lt;memory&gt;</span>
+    <span class="com">// unique_ptr&lt;int[]&gt; smart = make_unique&lt;int[]&gt;(5);</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "pointers.cpp",
+                tasks: [
+                    {
+                        id: "t-5-1-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Создайте динамический массив размером N (вводится пользователем). Заполните числами, найдите сумму и среднее. Не забудьте освободить память!"
+                    },
+                    {
+                        id: "t-5-1-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Реализуйте динамический стек (LIFO) с помощью сырых указателей: push, pop, peek, isEmpty, size. Деструктор должен освобождать всю память."
+                    },
+                    {
+                        id: "t-5-1-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Реализуйте динамическую матрицу (int**) произвольного размера. Методы: создание, заполнение, транспонирование (создаёт новую матрицу), умножение двух матриц, корректное освобождение памяти."
+                    }
+                ],
+                quiz: {
+                    question: "Что произойдёт если использовать delete[] вместо delete для одиночного объекта?",
+                    options: ["Ничего, это одно и то же", "Неопределённое поведение", "Компилятор выдаст ошибку", "Память освободится дважды"],
+                    correct: 1,
+                    explanation: "delete и delete[] — разные операции. delete для одиночных объектов, delete[] для массивов. Использование не того оператора — неопределённое поведение (UB)."
+                }
+            }
+        ]
+    },
+    {
+        id: 6,
+        title: "ООП — Классы",
+        icon: "🏗️",
+        description: "Объектно-ориентированное программирование",
+        lessons: [
+            {
+                id: "6-1",
+                title: "Классы и объекты",
+                difficulty: "medium",
+                description: "Инкапсуляция, конструкторы, методы, геттеры и сеттеры",
+                content: `
+                    <div class="theory-block">
+                        <h3>🏗️ Три кита ООП</h3>
+                        <ul>
+                            <li>🔒 <strong>Инкапсуляция</strong> — скрываем данные, предоставляем интерфейс</li>
+                            <li>🧬 <strong>Наследование</strong> — новый класс на основе существующего</li>
+                            <li>🎭 <strong>Полиморфизм</strong> — один интерфейс, разное поведение</li>
+                        </ul>
+                    </div>
+                    <div class="info-box tip">
+                        <span class="info-icon">💡</span>
+                        <p><strong>private vs public vs protected:</strong><br>
+                        <code>private</code> — только внутри класса<br>
+                        <code>public</code> — доступно всем<br>
+                        <code>protected</code> — внутри класса и наследников</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;string&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="kw">class</span> <span class="type">BankAccount</span> {
+<span class="kw">private</span>:
+    <span class="type">string</span> <span class="var">owner</span>;
+    <span class="type">double</span> <span class="var">balance</span>;
+    <span class="type">int</span> <span class="var">accountNum</span>;
+
+<span class="kw">public</span>:
+    <span class="com">// Конструктор со списком инициализации</span>
+    <span class="type">BankAccount</span>(<span class="type">string</span> <span class="var">name</span>, <span class="type">double</span> <span class="var">initial</span>, <span class="type">int</span> <span class="var">num</span>)
+        : <span class="var">owner</span>(<span class="var">name</span>), <span class="var">balance</span>(<span class="var">initial</span>), <span class="var">accountNum</span>(<span class="var">num</span>) {}
+
+    <span class="com">// Деструктор</span>
+    <span class="op">~</span><span class="type">BankAccount</span>() {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Счёт "</span> <span class="op">&lt;&lt;</span> <span class="var">accountNum</span> <span class="op">&lt;&lt;</span> <span class="str">" закрыт"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+
+    <span class="type">void</span> <span class="fn">deposit</span>(<span class="type">double</span> <span class="var">amount</span>) {
+        <span class="kw">if</span> (<span class="var">amount</span> <span class="op">&gt;</span> <span class="num">0</span>) <span class="var">balance</span> <span class="op">+=</span> <span class="var">amount</span>;
+    }
+
+    <span class="type">bool</span> <span class="fn">withdraw</span>(<span class="type">double</span> <span class="var">amount</span>) {
+        <span class="kw">if</span> (<span class="var">amount</span> <span class="op">&lt;=</span> <span class="var">balance</span>) {
+            <span class="var">balance</span> <span class="op">-=</span> <span class="var">amount</span>;
+            <span class="kw">return</span> <span class="kw">true</span>;
+        }
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Недостаточно средств!"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+
+    <span class="com">// Геттеры (const — не изменяют объект)</span>
+    <span class="type">double</span> <span class="fn">getBalance</span>() <span class="kw">const</span> { <span class="kw">return</span> <span class="var">balance</span>; }
+    <span class="type">string</span> <span class="fn">getOwner</span>() <span class="kw">const</span> { <span class="kw">return</span> <span class="var">owner</span>; }
+
+    <span class="type">void</span> <span class="fn">info</span>() <span class="kw">const</span> {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Счёт #"</span> <span class="op">&lt;&lt;</span> <span class="var">accountNum</span>
+             <span class="op">&lt;&lt;</span> <span class="str">" | Владелец: "</span> <span class="op">&lt;&lt;</span> <span class="var">owner</span>
+             <span class="op">&lt;&lt;</span> <span class="str">" | Баланс: "</span> <span class="op">&lt;&lt;</span> <span class="var">balance</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+};
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">BankAccount</span> <span class="var">alice</span>(<span class="str">"Alice"</span>, <span class="num">1000.0</span>, <span class="num">1001</span>);
+    <span class="var">alice</span>.<span class="fn">deposit</span>(<span class="num">500</span>);
+    <span class="var">alice</span>.<span class="fn">withdraw</span>(<span class="num">200</span>);
+    <span class="var">alice</span>.<span class="fn">info</span>();
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "classes.cpp",
+                tasks: [
+                    {
+                        id: "t-6-1-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Создайте класс Rectangle с полями width и height. Методы: area(), perimeter(), isSquare(), scale(factor), print(). Демонстрация в main."
+                    },
+                    {
+                        id: "t-6-1-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Создайте класс Student: имя, возраст, массив оценок (5 предметов). Методы: addGrade, getAverage, isPassing (средняя >= 60), printReport. Добавьте сортировку массива студентов по среднему баллу."
+                    },
+                    {
+                        id: "t-6-1-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Создайте класс Matrix с динамическим хранением. Конструктор (rows, cols), конструктор копирования, деструктор. Перегрузите операторы +, -, *, =, << для вывода. Метод transpose()."
+                    }
+                ],
+                quiz: {
+                    question: "Что такое конструктор в C++?",
+                    options: [
+                        "Функция для удаления объекта",
+                        "Специальная функция, вызываемая при создании объекта",
+                        "Функция с ключевым словом new",
+                        "Любая функция внутри класса"
+                    ],
+                    correct: 1,
+                    explanation: "Конструктор — специальная функция-член класса, имя которой совпадает с именем класса. Вызывается автоматически при создании объекта для его инициализации."
+                }
+            },
+            {
+                id: "6-2",
+                title: "Наследование и полиморфизм",
+                difficulty: "hard",
+                description: "Иерархии классов, виртуальные методы, полиморфизм",
+                content: `
+                    <div class="theory-block">
+                        <h3>🧬 Наследование</h3>
+                        <p>Наследование позволяет создать новый класс на основе существующего, унаследовав его поля и методы. Производный класс может <strong>переопределять</strong> методы базового класса.</p>
+                    </div>
+                    <div class="info-box tip">
+                        <span class="info-icon">💡</span>
+                        <p><strong>virtual</strong> — ключевое слово для включения полиморфизма. Виртуальный деструктор обязателен в базовом классе при работе через указатели!</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="kw">class</span> <span class="type">Shape</span> {
+<span class="kw">protected</span>:
+    <span class="type">string</span> <span class="var">color</span>;
+<span class="kw">public</span>:
+    <span class="type">Shape</span>(<span class="type">string</span> <span class="var">c</span>) : <span class="var">color</span>(<span class="var">c</span>) {}
+    <span class="kw">virtual</span> <span class="type">double</span> <span class="fn">area</span>() <span class="kw">const</span> <span class="op">=</span> <span class="num">0</span>;  <span class="com">// чисто виртуальный</span>
+    <span class="kw">virtual</span> <span class="type">void</span> <span class="fn">draw</span>() <span class="kw">const</span> {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Фигура цвета "</span> <span class="op">&lt;&lt;</span> <span class="var">color</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+    <span class="kw">virtual</span> <span class="op">~</span><span class="type">Shape</span>() {}
+};
+
+<span class="kw">class</span> <span class="type">Circle</span> : <span class="kw">public</span> <span class="type">Shape</span> {
+    <span class="type">double</span> <span class="var">radius</span>;
+<span class="kw">public</span>:
+    <span class="type">Circle</span>(<span class="type">double</span> <span class="var">r</span>, <span class="type">string</span> <span class="var">c</span>) : <span class="type">Shape</span>(<span class="var">c</span>), <span class="var">radius</span>(<span class="var">r</span>) {}
+    <span class="type">double</span> <span class="fn">area</span>() <span class="kw">const override</span> {
+        <span class="kw">return</span> <span class="num">3.14159</span> <span class="op">*</span> <span class="var">radius</span> <span class="op">*</span> <span class="var">radius</span>;
+    }
+    <span class="type">void</span> <span class="fn">draw</span>() <span class="kw">const override</span> {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Круг r="</span> <span class="op">&lt;&lt;</span> <span class="var">radius</span> <span class="op">&lt;&lt;</span> <span class="str">" ["</span> <span class="op">&lt;&lt;</span> <span class="var">color</span> <span class="op">&lt;&lt;</span> <span class="str">"]"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+};
+
+<span class="kw">class</span> <span class="type">Rectangle</span> : <span class="kw">public</span> <span class="type">Shape</span> {
+    <span class="type">double</span> <span class="var">w</span>, <span class="var">h</span>;
+<span class="kw">public</span>:
+    <span class="type">Rectangle</span>(<span class="type">double</span> <span class="var">w</span>, <span class="type">double</span> <span class="var">h</span>, <span class="type">string</span> <span class="var">c</span>)
+        : <span class="type">Shape</span>(<span class="var">c</span>), <span class="var">w</span>(<span class="var">w</span>), <span class="var">h</span>(<span class="var">h</span>) {}
+    <span class="type">double</span> <span class="fn">area</span>() <span class="kw">const override</span> { <span class="kw">return</span> <span class="var">w</span> <span class="op">*</span> <span class="var">h</span>; }
+    <span class="type">void</span> <span class="fn">draw</span>() <span class="kw">const override</span> {
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Rect "</span> <span class="op">&lt;&lt;</span> <span class="var">w</span> <span class="op">&lt;&lt;</span> <span class="str">"x"</span> <span class="op">&lt;&lt;</span> <span class="var">h</span> <span class="op">&lt;&lt;</span> <span class="str">" ["</span> <span class="op">&lt;&lt;</span> <span class="var">color</span> <span class="op">&lt;&lt;</span> <span class="str">"]"</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+    }
+};
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="com">// Полиморфизм через указатели на базовый класс</span>
+    <span class="type">Shape</span><span class="op">*</span> <span class="var">shapes</span>[] <span class="op">=</span> {
+        <span class="kw">new</span> <span class="type">Circle</span>(<span class="num">5.0</span>, <span class="str">"red"</span>),
+        <span class="kw">new</span> <span class="type">Rectangle</span>(<span class="num">4.0</span>, <span class="num">6.0</span>, <span class="str">"blue"</span>),
+        <span class="kw">new</span> <span class="type">Circle</span>(<span class="num">3.0</span>, <span class="str">"green"</span>)
+    };
+
+    <span class="kw">for</span> (<span class="kw">auto</span> <span class="var">s</span> : <span class="var">shapes</span>) {
+        <span class="var">s</span><span class="op">-&gt;</span><span class="fn">draw</span>();
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Площадь: "</span> <span class="op">&lt;&lt;</span> <span class="var">s</span><span class="op">-&gt;</span><span class="fn">area</span>() <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+        <span class="kw">delete</span> <span class="var">s</span>;
+    }
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "inheritance.cpp",
+                tasks: [
+                    {
+                        id: "t-6-2-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Создайте иерархию Vehicle → Car, Motorcycle, Truck. Виртуальные методы: start(), describe(), fuelConsumption(km). Демонстрация полиморфизма через массив указателей."
+                    },
+                    {
+                        id: "t-6-2-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Абстрактный класс Animal с методами speak(), move(), describe(). Наследники: Dog (гавкает, бегает), Cat (мяукает, крадётся), Bird (поёт, летит), Fish (молчит, плывёт). Полиморфная функция makeNoise(Animal* a)."
+                    },
+                    {
+                        id: "t-6-2-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "RPG-система: Character → Warrior, Mage, Rogue. У каждого свои характеристики и способности. Реализуйте механику боя: attack(), defend(), useAbility(). Проведите серию боёв."
+                    }
+                ],
+                quiz: {
+                    question: "Ключевое слово override в C++:",
+                    options: [
+                        "Создаёт новый виртуальный метод",
+                        "Явно указывает что метод переопределяет виртуальный метод базового класса",
+                        "Запрещает переопределение метода",
+                        "Делает метод статическим"
+                    ],
+                    correct: 1,
+                    explanation: "override явно указывает компилятору, что данный метод переопределяет виртуальный метод базового класса. Если такого метода нет — компилятор выдаст ошибку, что помогает избежать опечаток."
+                }
+            }
+        ]
+    },
+    {
+        id: 7,
+        title: "STL и шаблоны",
+        icon: "📚",
+        description: "Стандартная библиотека: vector, map, set, алгоритмы",
+        lessons: [
+            {
+                id: "7-1",
+                title: "Шаблоны и STL-контейнеры",
+                difficulty: "hard",
+                description: "Шаблоны функций и классов, vector, map, set",
+                content: `
+                    <div class="theory-block">
+                        <h3>📚 STL — Стандартная Библиотека Шаблонов</h3>
+                        <p>STL содержит готовые шаблонные классы и алгоритмы:
+                        <br>• <span class="inline-code">vector</span> — динамический массив
+                        <br>• <span class="inline-code">map</span> — словарь ключ-значение (отсортирован)
+                        <br>• <span class="inline-code">set</span> — множество уникальных элементов
+                        <br>• <span class="inline-code">queue</span> — очередь FIFO
+                        <br>• <span class="inline-code">stack</span> — стек LIFO
+                        <br>• <span class="inline-code">unordered_map</span> — словарь (хэш-таблица, быстрее)</p>
+                    </div>
+                `,
+                code: `<span class="inc">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;vector&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;map&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;algorithm&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;numeric&gt;</span>
+<span class="kw">using namespace</span> <span class="type">std</span>;
+
+<span class="com">// Шаблон функции</span>
+<span class="kw">template</span> <span class="op">&lt;</span><span class="kw">typename</span> <span class="type">T</span><span class="op">&gt;</span>
+<span class="type">T</span> <span class="fn">findMax</span>(<span class="type">T</span> <span class="var">a</span>, <span class="type">T</span> <span class="var">b</span>) { <span class="kw">return</span> (<span class="var">a</span> <span class="op">&gt;</span> <span class="var">b</span>) <span class="op">?</span> <span class="var">a</span> <span class="op">:</span> <span class="var">b</span>; }
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="com">// === vector ===</span>
+    <span class="type">vector</span><span class="op">&lt;</span><span class="type">int</span><span class="op">&gt;</span> <span class="var">v</span> <span class="op">=</span> {<span class="num">5</span>, <span class="num">2</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>, <span class="num">3</span>};
+    <span class="var">v</span>.<span class="fn">push_back</span>(<span class="num">7</span>);
+    <span class="fn">sort</span>(<span class="var">v</span>.<span class="fn">begin</span>(), <span class="var">v</span>.<span class="fn">end</span>());
+
+    <span class="type">int</span> <span class="var">sum</span> <span class="op">=</span> <span class="fn">accumulate</span>(<span class="var">v</span>.<span class="fn">begin</span>(), <span class="var">v</span>.<span class="fn">end</span>(), <span class="num">0</span>);
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Сумма: "</span> <span class="op">&lt;&lt;</span> <span class="var">sum</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// Лямбда + алгоритм</span>
+    <span class="kw">auto</span> <span class="var">it</span> <span class="op">=</span> <span class="fn">find_if</span>(<span class="var">v</span>.<span class="fn">begin</span>(), <span class="var">v</span>.<span class="fn">end</span>(),
+                      [](<span class="type">int</span> <span class="var">x</span>) { <span class="kw">return</span> <span class="var">x</span> <span class="op">&gt;</span> <span class="num">5</span>; });
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Первый &gt;5: "</span> <span class="op">&lt;&lt;</span> <span class="op">*</span><span class="var">it</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// === map ===</span>
+    <span class="type">map</span><span class="op">&lt;</span><span class="type">string</span>, <span class="type">int</span><span class="op">&gt;</span> <span class="var">wordCount</span>;
+    <span class="type">string</span> <span class="var">words</span>[] <span class="op">=</span> {<span class="str">"hello"</span>, <span class="str">"world"</span>, <span class="str">"hello"</span>, <span class="str">"cpp"</span>};
+    <span class="kw">for</span> (<span class="kw">auto</span> <span class="var">w</span> : <span class="var">words</span>) <span class="var">wordCount</span>[<span class="var">w</span>]<span class="op">++</span>;
+
+    <span class="kw">for</span> (<span class="kw">auto</span><span class="op">&amp;</span> [<span class="var">word</span>, <span class="var">count</span>] : <span class="var">wordCount</span>)
+        <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">word</span> <span class="op">&lt;&lt;</span> <span class="str">": "</span> <span class="op">&lt;&lt;</span> <span class="var">count</span> <span class="op">&lt;&lt;</span> <span class="var">endl</span>;
+
+    <span class="com">// Шаблон</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">findMax</span>(<span class="num">3</span>, <span class="num">7</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>;       <span class="com">// int</span>
+    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">findMax</span>(<span class="num">3.14</span>, <span class="num">2.72</span>) <span class="op">&lt;&lt;</span> <span class="var">endl</span>; <span class="com">// double</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}`,
+                codeTitle: "stl.cpp",
+                tasks: [
+                    {
+                        id: "t-7-1-1",
+                        title: "Задание 1 — Лёгкое",
+                        difficulty: "easy",
+                        desc: "Используя map, подсчитайте частоту слов в строке, введённой пользователем. Выведите слова в алфавитном порядке с их частотами."
+                    },
+                    {
+                        id: "t-7-1-2",
+                        title: "Задание 2 — Среднее",
+                        difficulty: "medium",
+                        desc: "Реализуйте шаблонный класс Queue<T> на основе deque. Методы: enqueue, dequeue, front, back, size, empty, print. Протестируйте с int, string и вашим классом."
+                    },
+                    {
+                        id: "t-7-1-3",
+                        title: "Задание 3 — Сложное",
+                        difficulty: "hard",
+                        desc: "Анализ текста: найдите 10 самых частых слов, уникальные слова (встречаются 1 раз), сгруппируйте анаграммы. Используйте map, set, sort, transform."
+                    }
+                ],
+                quiz: {
+                    question: "Какой STL-контейнер автоматически сортирует элементы и удаляет дубликаты?",
+                    options: ["vector", "list", "set", "deque"],
+                    correct: 2,
+                    explanation: "std::set хранит уникальные элементы в отсортированном порядке. При добавлении дубликата он просто игнорируется. Для несортированного множества используйте unordered_set."
+                }
+            }
+        ]
+    }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentLesson = null;
+let completedLessons = new Set(JSON.parse(localStorage.getItem('completed') || '[]'));
+let answeredQuizzes = new Set(JSON.parse(localStorage.getItem('quizzes') || '[]'));
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+    buildSidebar();
+    buildModulesGrid();
+    updateProgress();
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function buildSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';
+
+    courseData.forEach(module => {
+        const section = document.createElement('div');
+        section.className = 'sidebar-section';
+
+        const completedInModule = module.lessons.filter(l => completedLessons.has(l.id)).length;
+
+        section.innerHTML = `
+            <div class="module-header" onclick="toggleModule(${module.id})">
+                <span>${module.icon} Модуль ${module.id}: ${module.title}</span>
+                <span class="module-badge">${completedInModule}/${module.lessons.length}</span>
+            </div>
+            <div class="module-lessons" id="module-lessons-${module.id}">
+                ${module.lessons.map(lesson => `
+                    <div class="lesson-item ${completedLessons.has(lesson.id) ? 'completed' : ''} ${currentLesson === lesson.id ? 'active' : ''}"
+                         id="sidebar-${lesson.id}"
+                         onclick="loadLesson('${lesson.id}')">
+                        <span class="lesson-icon">${completedLessons.has(lesson.id) ? '✅' : '○'}</span>
+                        <span class="lesson-title">${lesson.title}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        sidebar.appendChild(section);
+    });
+}
+
+function toggleModule(id) {
+    const el = document.getElementById(`module-lessons-${id}`);
+    if (el.style.maxHeight && el.style.maxHeight !== '0px') {
+        el.style.maxHeight = '0px';
+    } else {
+        el.style.maxHeight = el.scrollHeight + 'px';
+    }
+}
+
+// Открыть все модули по умолчанию
+function openAllModules() {
+    courseData.forEach(m => {
+        const el = document.getElementById(`module-lessons-${m.id}`);
+        if (el) el.style.maxHeight = el.scrollHeight + 'px';
+    });
+}
+
+// ============================================================
+// MODULES GRID
+// ============================================================
+function buildModulesGrid() {
+    const grid = document.getElementById('modulesGrid');
+    grid.innerHTML = '';
+
+    courseData.forEach(module => {
+        const total = module.lessons.length;
+        const done = module.lessons.filter(l => completedLessons.has(l.id)).length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        const card = document.createElement('div');
+        card.className = 'module-card';
+        card.innerHTML = `
+            <div class="module-card-icon">${module.icon}</div>
+            <h3>Модуль ${module.id}: ${module.title}</h3>
+            <p>${module.description}</p>
+            <div class="module-progress">
+                <div class="module-progress-bar">
+                    <div class="module-progress-fill" style="width:${pct}%"></div>
+                </div>
+                <span class="module-progress-text">${done}/${total}</span>
+            </div>
+        `;
+        card.onclick = () => loadLesson(module.lessons[0].id);
+        grid.appendChild(card);
+    });
+}
+
+// ============================================================
+// LOAD LESSON
+// ============================================================
+function loadLesson(lessonId) {
+    let lesson = null, module = null;
+
+    for (const m of courseData) {
+        const l = m.lessons.find(x => x.id === lessonId);
+        if (l) { lesson = l; module = m; break; }
+    }
+
+    if (!lesson) return;
+
+    currentLesson = lessonId;
+    document.getElementById('homePage').style.display = 'none';
+
+    const container = document.getElementById('lessonPages');
+    container.innerHTML = '';
+    container.style.display = 'block';
+
+    const div = document.createElement('div');
+    div.className = 'lesson-content show fade-in';
+
+    const diffTag = lesson.difficulty === 'easy' ? 'tag-easy' :
+                    lesson.difficulty === 'medium' ? 'tag-medium' : 'tag-hard';
+    const diffLabel = lesson.difficulty === 'easy' ? '🟢 Начальный' :
+                      lesson.difficulty === 'medium' ? '🟡 Средний' : '🔴 Продвинутый';
+
+    const isCompleted = completedLessons.has(lesson.id);
+    const quizAnswered = answeredQuizzes.has(lesson.id);
+
+    // Find prev/next
+    const allLessons = courseData.flatMap(m => m.lessons);
+    const idx = allLessons.findIndex(l => l.id === lessonId);
+    const prev = idx > 0 ? allLessons[idx - 1] : null;
+    const next = idx < allLessons.length - 1 ? allLessons[idx + 1] : null;
+
+    div.innerHTML = `
+        <div class="lesson-header">
+            <div class="lesson-meta">
+                <span class="tag tag-module">Модуль ${module.id}</span>
+                <span class="tag ${diffTag}">${diffLabel}</span>
+                ${isCompleted ? '<span class="tag tag-easy">✅ Пройдено</span>' : ''}
+            </div>
+            <h1>${lesson.title}</h1>
+            <p>${lesson.description}</p>
+        </div>
+        <div class="divider"></div>
+
+        ${lesson.content}
+
+        <div class="code-block">
+            <div class="code-header">
+                <div class="code-title">
+                    <span class="code-dot dot-r"></span>
+                    <span class="code-dot dot-y"></span>
+                    <span class="code-dot dot-g"></span>
+                    <span style="margin-left:8px">${lesson.codeTitle}</span>
+                </div>
+                <button class="copy-btn" onclick="copyCode(this)">📋 Копировать</button>
+            </div>
+            <pre><code>${lesson.code}</code></pre>
+        </div>
+
+        ${lesson.afterCode || ''}
+
+        ${buildTasks(lesson)}
+        ${buildQuiz(lesson, quizAnswered)}
+
+        <div class="lesson-nav">
+            <button class="nav-btn" onclick="${prev ? `loadLesson('${prev.id}')` : ''}" ${!prev ? 'disabled' : ''}>
+                ← ${prev ? prev.title : 'Назад'}
+            </button>
+
+            <button class="complete-btn ${isCompleted ? 'completed' : ''}"
+                    id="completeBtn"
+                    onclick="completeLesson('${lesson.id}')">
+                ${isCompleted ? '✅ Урок пройден' : '🎯 Отметить как пройденный'}
+            </button>
+
+            <button class="nav-btn nav-btn-next" onclick="${next ? `loadLesson('${next.id}')` : ''}" ${!next ? 'disabled' : ''}>
+                ${next ? next.title : 'Финиш'} →
+            </button>
+        </div>
+    `;
+
+    container.appendChild(div);
+
+    // Scroll to top
+    document.getElementById('mainContent').scrollTop = 0;
+
+    // Update sidebar
+    buildSidebar();
+    openAllModules();
+
+    // Highlight active
+    setTimeout(() => {
+        document.querySelectorAll('.lesson-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        const activeItem = document.getElementById(`sidebar-${lessonId}`);
+        if (activeItem) activeItem.classList.add('active');
+    }, 50);
+
+    closeMobileMenu();
+}
+
+// ============================================================
+// TASKS
+// ============================================================
+function buildTasks(lesson) {
+    if (!lesson.tasks || !lesson.tasks.length) return '';
+
+    const diffColors = { easy: 'tag-easy', medium: 'tag-medium', hard: 'tag-hard' };
+    const diffLabels = { easy: 'Лёгкое', medium: 'Среднее', hard: 'Сложное' };
+
+    return `
+        <div class="tasks-section">
+            <div class="tasks-title">📝 Практические задания</div>
+            ${lesson.tasks.map(task => {
+                const done = completedLessons.has(task.id);
+                return `
+                    <div class="task-card ${done ? 'done' : ''}" id="task-card-${task.id}">
+                        <div class="task-header">
+                            <div class="task-title">
+                                <span class="tag ${diffColors[task.difficulty]}">${diffLabels[task.difficulty]}</span>
+                                ${task.title}
+                            </div>
+                            <button class="task-check ${done ? 'checked' : ''}"
+                                    id="check-${task.id}"
+                                    onclick="toggleTask('${task.id}')">
+                                ${done ? '✓' : ''}
+                            </button>
+                        </div>
+                        <div class="task-desc">${task.desc}</div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
+function toggleTask(taskId) {
+    if (completedLessons.has(taskId)) {
+        completedLessons.delete(taskId);
+    } else {
+        completedLessons.add(taskId);
+        showToast('✅', 'Задание выполнено!', 'success');
+    }
+
+    saveProgress();
+
+    const card = document.getElementById(`task-card-${taskId}`);
+    const check = document.getElementById(`check-${taskId}`);
+
+    if (card) card.classList.toggle('done', completedLessons.has(taskId));
+    if (check) {
+        check.classList.toggle('checked', completedLessons.has(taskId));
+        check.textContent = completedLessons.has(taskId) ? '✓' : '';
+    }
+
+    updateProgress();
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+function buildQuiz(lesson, answered) {
+    if (!lesson.quiz) return '';
+    const q = lesson.quiz;
+
+    return `
+        <div class="quiz-section">
+            <div class="quiz-title">🧠 Проверьте знания</div>
+            <div class="quiz-question">${q.question}</div>
+            <div class="quiz-options" id="quiz-options-${lesson.id}">
+                ${q.options.map((opt, i) => `
+                    <button class="quiz-option ${answered ? (i === q.correct ? 'correct' : '') : ''}"
+                            ${answered ? 'disabled' : ''}
+                            onclick="answerQuiz('${lesson.id}', ${i}, ${q.correct}, this)">
+                        ${String.fromCharCode(65+i)}. ${opt}
+                    </button>
+                `).join('')}
+            </div>
+            <div class="quiz-feedback ${answered ? 'show correct' : ''}" id="quiz-feedback-${lesson.id}">
+                ${answered ? '✅ ' + q.explanation : ''}
+            </div>
+        </div>
+    `;
+}
+
+function answerQuiz(lessonId, chosen, correct, btn) {
+    const options = document.querySelectorAll(`#quiz-options-${lessonId} .quiz-option`);
+    const feedback = document.getElementById(`quiz-feedback-${lessonId}`);
+
+    options.forEach((opt, i) => {
+        opt.disabled = true;
+        if (i === correct) opt.classList.add('correct');
+        else if (i === chosen && chosen !== correct) opt.classList.add('wrong');
+    });
+
+    const lesson = courseData.flatMap(m => m.lessons).find(l => l.id === lessonId);
+
+    if (chosen === correct) {
+        feedback.className = 'quiz-feedback show correct';
+        feedback.textContent = '✅ ' + lesson.quiz.explanation;
+        showToast('🎉', 'Правильно!', 'success');
+    } else {
+        feedback.className = 'quiz-feedback show wrong';
+        feedback.textContent = '❌ Неверно. ' + lesson.quiz.explanation;
+        showToast('💡', 'Не расстраивайтесь — перечитайте теорию!', 'info');
+    }
+
+    answeredQuizzes.add(lessonId);
+    localStorage.setItem('quizzes', JSON.stringify([...answeredQuizzes]));
+}
+
+// ============================================================
+// COMPLETE LESSON
+// ============================================================
+function completeLesson(lessonId) {
+    const btn = document.getElementById('completeBtn');
+
+    if (completedLessons.has(lessonId)) {
+        completedLessons.delete(lessonId);
+        btn.className = 'complete-btn';
+        btn.textContent = '🎯 Отметить как пройденный';
+    } else {
+        completedLessons.add(lessonId);
+        btn.className = 'complete-btn completed';
+        btn.textContent = '✅ Урок пройден';
+        showToast('🎉', 'Урок завершён! Отличная работа!', 'success');
+    }
+
+    saveProgress();
+    updateProgress();
+    buildSidebar();
+    openAllModules();
+
+    // Re-highlight active
+    setTimeout(() => {
+        const activeItem = document.getElementById(`sidebar-${lessonId}`);
+        if (activeItem) activeItem.classList.add('active');
+    }, 50);
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function updateProgress() {
+    const totalLessons = courseData.reduce((sum, m) => sum + m.lessons.length, 0);
+    const done = courseData.reduce((sum, m) =>
+        sum + m.lessons.filter(l => completedLessons.has(l.id)).length, 0);
+    const pct = totalLessons > 0 ? Math.round((done / totalLessons) * 100) : 0;
+
+    document.getElementById('headerProgress').style.width = pct + '%';
+    document.getElementById('headerProgressText').textContent = pct + '% пройдено';
+
+    buildModulesGrid();
+}
+
+function saveProgress() {
+    localStorage.setItem('completed', JSON.stringify([...completedLessons]));
+}
+
+// ============================================================
+// COPY CODE
+// ============================================================
+function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.textContent;
+
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✅ Скопировано';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = '📋 Копировать';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(icon, text, type = 'info') {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastText').textContent = text;
+    toast.className = `toast ${type} show`;
+
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showHome() {
+    document.getElementById('homePage').style.display = 'block';
+    document.getElementById('lessonPages').innerHTML = '';
+    currentLesson = null;
+    buildSidebar();
+    openAllModules();
+    document.getElementById('mainContent').scrollTop = 0;
+}
+
+function startCourse() {
+    const firstLesson = courseData[0].lessons[0];
+    loadLesson(firstLesson.id);
+}
+
+function showProgress() {
+    const totalLessons = courseData.reduce((sum, m) => sum + m.lessons.length, 0);
+    const doneLessons = courseData.reduce((sum, m) =>
+        sum + m.lessons.filter(l => completedLessons.has(l.id)).length, 0);
+    const pct = Math.round((doneLessons / totalLessons) * 100);
+
+    showToast('📊', `Пройдено: ${doneLessons}/${totalLessons} уроков (${pct}%)`, 'info');
+}
+
+function toggleMobileMenu() {
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+}
+
+function closeMobileMenu() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+}
+
+// ============================================================
+// START
+// ============================================================
+init();
+openAllModules();
+</script>
+</body>
+</html>
